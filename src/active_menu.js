@@ -21,8 +21,12 @@ const navItems = sectionIds.map(id => document.querySelector(`[href="${id}"]`));
 //현재 섹션들이 보여지고 있는지 아닌지 간직할 수 있는 배열을 만들기
 //기본적으로 보여지고 있지않는 것으로 false를 줌.
 const visibleSections = sectionIds.map(() => false);
+let activeNavItem = navItems[0];
 
-const options = {};
+const options = {
+  rootMargin: "-20% 0px 0px 0px",
+  threshold: [0, 0.98],
+};
 const observer = new IntersectionObserver(observerCallback, options);
 sections.forEach(section => observer.observe(section));
 
@@ -35,15 +39,14 @@ function observerCallback(entries) {
     selectLastOne=    //마지막 contact를 selected 해야할지말지 끝까지 내려갔을때 선택
       index === sectionIds.length - 1 && 
       entry.isIntersectiong && 
-      entry.intersectionRatio >= 0.99;
+      entry.intersectionRatio >= 0.95;
     });
-    console.log(visibleSections);
-    console.log(selectLastOne);
 
     const navIndex = selectLastOne 
       ? sectionIds.length -1
       : findFirstIntersecting(visibleSections);
-    console.log(sectionIds[navIndex]);
+
+    selectNavItem(navIndex);
 }
 
 function findFirstIntersecting(intersections){
@@ -51,3 +54,10 @@ function findFirstIntersecting(intersections){
   return index >= 0 ? index : 0;
 }
 
+function selectNavItem(index){
+  const navItem = navItems[index];
+  if(!navItem) return;
+  activeNavItem.classList.remove('active');
+  activeNavItem = navItem;   //선택된 navItem을 재할당.
+  activeNavItem.classList.add('active');
+}
